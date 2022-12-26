@@ -11,7 +11,7 @@ public class BlockIsland : IPluginInitializer
     public string Introduction => "刷矿机 - 用于方屿";
     public Dictionary<string, string> MetaData => new();
     public Version Version => new(1, 0, 0);
-    public static Dictionary<string, int> data = new()
+    internal static readonly Dictionary<string, int> data = new()
     {
         ["minecraft:cobblestone"] = 100,
         ["minecraft:coal_ore"] = 15,
@@ -23,7 +23,7 @@ public class BlockIsland : IPluginInitializer
         ["minecraft:emerald_ore"] = 3,
         ["minecraft:diamond_ore"] = 1
     };
-    public static int sum = 0;
+    internal static int sum = 0;
     public void OnInitialize()
     {
         foreach (int weight in data.Values)
@@ -34,7 +34,7 @@ public class BlockIsland : IPluginInitializer
     }
 }
 
-internal delegate void BlockIslandHookDelegate(IntPtr @this, IntPtr a2, BlockPos a3, BlockPos a4);
+internal delegate void BlockIslandHookDelegate(nint @this, nint a2, BlockPos a3, BlockPos a4);
 [HookSymbol("?solidify@LiquidBlock@@IEBAXAEAVBlockSource@@AEBVBlockPos@@1@Z")]
 internal class BlockIslandHook : THookBase<BlockIslandHookDelegate>
 {
@@ -45,12 +45,12 @@ internal class BlockIslandHook : THookBase<BlockIslandHookDelegate>
             BlockInstance bi = new BlockSource(a2).GetBlockInstance(a3);
             if (bi.Block.TypeName is "minecraft:stone" or "minecraft:cobblestone")
             {
-                int randInt = new Random().Next(BlockIsland.sum);
-                foreach (KeyValuePair<string, int> datum in BlockIsland.data)
+                int randInt = Random.Shared.Next(BlockIsland.sum);
+                foreach ((string block, int weight) in BlockIsland.data)
                 {
-                    if (datum.Value > randInt)
+                    if (weight > randInt)
                     {
-                        Level.SetBlock(a3, bi.DimensionId, datum.Key, 0);
+                        _ = Level.SetBlock(a3, bi.DimensionId, block, 0);
                     }
                 }
             }
