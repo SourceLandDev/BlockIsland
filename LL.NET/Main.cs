@@ -31,7 +31,7 @@ public class BlockIsland : IPluginInitializer
             sum += weight;
         }
         Thook.RegisterHook<OnSolidifyHook, OnSolidifyHookDelegate>();
-        Thook.RegisterHook<OnCreatePortalHook, OnCreatePortalHookDelegate>();
+        Thook.RegisterHook<TrySpawnPortalHook, TrySpawnPortalHookDelegate>();
     }
 }
 
@@ -58,9 +58,9 @@ internal class OnSolidifyHook : THookBase<OnSolidifyHookDelegate>
         };
 }
 
-internal delegate void OnCreatePortalHookDelegate(nint @this, nint a2, int a3);
-[HookSymbol("?createPortal@PortalForcer@@QEAAAEBVPortalRecord@@AEBVActor@@H@Z")]
-internal class OnCreatePortalHook : THookBase<OnCreatePortalHookDelegate>
+internal delegate bool TrySpawnPortalHookDelegate(nint a1, nint a2);
+[HookSymbol("?trySpawnPortal@PortalBlock@@SA_NAEAVBlockSource@@AEBVBlockPos@@@Z")]
+internal class TrySpawnPortalHook : THookBase<TrySpawnPortalHookDelegate>
 {
-    public override OnCreatePortalHookDelegate Hook => (@this, a2, a3) => { };
+    public override TrySpawnPortalHookDelegate Hook => (a1, a2) => false;
 }
